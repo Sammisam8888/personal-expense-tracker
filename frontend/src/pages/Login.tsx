@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { api } from '../api';
+import { Eye, EyeOff } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [err, setErr] = useState('');
-  const navigate = useNavigate();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -19,10 +21,15 @@ export default function Login() {
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
       });
       localStorage.setItem('token', res.data.access_token);
-      // Reload or navigate
-      window.location.href = '/dashboard';
+      toast.success('Login successful!');
+      // Short delay to let the toast appear before the full page reload happens
+      setTimeout(() => {
+        window.location.href = '/dashboard';
+      }, 700);
     } catch (error: any) {
-      setErr(error.response?.data?.detail || 'Login failed');
+      const msg = error.response?.data?.detail || 'Login failed';
+      setErr(msg);
+      toast.error(msg);
     }
   };
 
@@ -42,11 +49,20 @@ export default function Login() {
           </div>
           <div>
             <label className="block text-sm font-medium mb-1">Password</label>
-            <input 
-              type="password" 
-              className="w-full border p-2 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none" 
-              value={password} onChange={e => setPassword(e.target.value)} required 
-            />
+            <div className="relative">
+              <input 
+                type={showPassword ? "text" : "password"} 
+                className="w-full border p-2 pr-10 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none" 
+                value={password} onChange={e => setPassword(e.target.value)} required 
+              />
+              <button
+                type="button"
+                className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-gray-700"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+            </div>
           </div>
           <button type="submit" className="w-full bg-blue-600 text-white p-2 rounded font-medium hover:bg-blue-700 transition">
             Log In

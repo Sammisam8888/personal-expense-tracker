@@ -18,6 +18,9 @@ def verify_pw(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
 
 def hash_pw(password):
+    # Truncate password to 72 bytes to avoid ValueError with newer bcrypt
+    if len(password.encode('utf-8')) > 72:
+        password = password.encode('utf-8')[:72].decode('utf-8', 'ignore')
     return pwd_context.hash(password)
 
 def create_token(data: dict):
