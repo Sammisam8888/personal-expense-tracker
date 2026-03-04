@@ -9,12 +9,12 @@ try {
         Write-Host "Creating virtual environment and installing backend dependencies..." -ForegroundColor Yellow
         python -m venv venv
         . .\venv\Scripts\activate.ps1
-        pip install fastapi "uvicorn[standard]" pydantic "pydantic[email]" motor beanie "passlib[bcrypt]" "bcrypt<4.0.0" pyjwt python-multipart
+        .\venv\Scripts\pip install fastapi "uvicorn[standard]" pydantic "pydantic[email]" motor beanie "passlib[bcrypt]" "bcrypt<4.0.0" pyjwt python-multipart httpx pytest pytest-asyncio
     } else {
         . .\venv\Scripts\activate.ps1
     }
     
-    $backendProcess = Start-Process -FilePath "uvicorn" -ArgumentList "main:app", "--reload", "--port", "8000" -PassThru -NoNewWindow
+    $backendProcess = Start-Process -FilePath ".\venv\Scripts\python.exe" -ArgumentList "-m", "uvicorn", "main:app", "--reload", "--port", "8000" -PassThru -NoNewWindow
     Pop-Location
 
     Write-Host "Starting Frontend Server..." -ForegroundColor Green

@@ -22,7 +22,6 @@ export default function Login() {
       });
       localStorage.setItem('token', res.data.access_token);
       toast.success('Login successful!');
-      // Short delay to let the toast appear before the full page reload happens
       setTimeout(() => {
         window.location.href = '/dashboard';
       }, 700);

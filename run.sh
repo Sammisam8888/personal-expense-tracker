@@ -17,11 +17,11 @@ if [ ! -d "venv" ]; then
     echo "Creating virtual environment and installing backend dependencies..."
     python3 -m venv venv
     source venv/bin/activate
-    pip install fastapi "uvicorn[standard]" pydantic "pydantic[email]" motor beanie "passlib[bcrypt]" "bcrypt<4.0.0" pyjwt python-multipart
+    ./venv/bin/pip install fastapi "uvicorn[standard]" pydantic "pydantic[email]" motor beanie "passlib[bcrypt]" "bcrypt<4.0.0" pyjwt python-multipart
 else
     source venv/bin/activate
 fi
-uvicorn main:app --reload --port 8000 &
+./venv/bin/python -m uvicorn main:app --reload --port 8000 &
 BACKEND_PID=$!
 cd ..
 

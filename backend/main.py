@@ -51,7 +51,6 @@ async def login(req: OAuth2PasswordRequestForm = Depends()):
 async def list_transactions(month: Optional[str] = None, current_user: User = Depends(auth.get_current_user)):
     query = {"user_id": str(current_user.id)}
     if month:
-        # Expected format YYYY-MM
         try:
             start_date = datetime.strptime(month, "%Y-%m")
             if start_date.month == 12:
@@ -63,7 +62,6 @@ async def list_transactions(month: Optional[str] = None, current_user: User = De
             pass
 
     txs = await Transaction.find(query).sort("-date").to_list()
-    # Map _id to id
     out = []
     for t in txs:
         d = t.dict()
@@ -130,8 +128,20 @@ async def delete_transaction(id: str, current_user: User = Depends(auth.get_curr
     return {"msg": "Deleted successfully"}
 
 @app.get("/summary")
-async def get_summary(current_user: User = Depends(auth.get_current_user)):
-    txs = await Transaction.find({"user_id": str(current_user.id)}).to_list()
+async def get_summary(month: Optional[str] = None, current_user: User = Depends(auth.get_current_user)):
+    query = {"user_id": str(current_user.id)}
+    if month:
+        try:
+            start_date = datetime.strptime(month, "%Y-%m")
+            if start_date.month == 12:
+                end_date = start_date.replace(year=start_date.year + 1, month=1)
+            else:
+                end_date = start_date.replace(month=start_date.month + 1)
+            query["date"] = {"$gte": start_date, "$lt": end_date}
+        except ValueError:
+            pass
+
+    txs = await Transaction.find(query).to_list()
     total_in = sum(t.amount for t in txs if t.type == "income")
     total_out = sum(t.amount for t in txs if t.type == "expense")
     

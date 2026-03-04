@@ -51,11 +51,13 @@ Once running, the application will be accessible at:
    ```
 3. Install dependencies:
    ```bash
-   pip install fastapi "uvicorn[standard]" pydantic "pydantic[email]" motor beanie "passlib[bcrypt]" pyjwt python-multipart
+   ./venv/bin/pip install fastapi "uvicorn[standard]" pydantic "pydantic[email]" motor beanie "passlib[bcrypt]" "bcrypt<4.0.0" pyjwt python-multipart httpx pytest pytest-asyncio
+   # On Windows: .\venv\Scripts\pip install ...
    ```
 4. Run the FastAPI server:
    ```bash
-   uvicorn main:app --reload --port 8000
+   ./venv/bin/python -m uvicorn main:app --reload --port 8000
+   # On Windows: .\venv\Scripts\python -m uvicorn ...
    ```
 
 #### Frontend Setup
@@ -186,8 +188,10 @@ Deletes a specific transaction.
 
 #### `GET /summary`
 
-Returns an aggregated summary of all transactions for the authenticated user.
+Returns an aggregated summary of transactions for the authenticated user.
 
+- **Query Parameters:**
+  - `month` (Optional): String in `YYYY-MM` format to filter the summary by month (e.g., `2023-10`). Defaults to all-time if not provided.
 - **Response (200 OK):**
   ```json
   {
@@ -204,8 +208,6 @@ Returns an aggregated summary of all transactions for the authenticated user.
 
 ## Known Limitations
 
-- Dark mode toggle is currently unhandled.
-- Monthly filtering UI is not fully present in the dashboard (transactions are returned starting from newest).
 - Basic error toasts instead of robust toast libraries.
 
 ## AI Usage statement
